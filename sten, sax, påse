@@ -1,0 +1,183 @@
+package inlämningsuppgift2;
+
+import java.util.Random; //För att använda Random-objekt till slumpgenerat tal.
+import java.util.Scanner; //För att använda Scanner-objekt för att läsa input från tangentbordet.
+
+public class Examination2 {
+
+	public static void main(String[] args) {
+
+//Programmet låter användaren spela ett spel "sten, sax, påse" med datorn.
+//Källor finns längst ned.
+		
+//Ett random-objekt och ett scanner-objekt skapas.
+		Random rand = new Random();
+		Scanner scan = new Scanner(System.in);
+
+//Användaren ombeds välja sten, sax, eller påse i början av programmet.
+		System.out.println("Välj sten, sax, eller påse.");
+		
+//Header.
+		System.out.println("Spelare - " + "Dator");
+		final int COL = 15;
+		for(int c = 0; c <= COL; c++) {
+			System.out.print("-");
+		}
+//Så att poängen hamnar under linjen:
+		System.out.println();
+		
+//Ackumulatorer som ska hålla användarens och datorns poäng.		
+		int userScore = 0;
+		int compScore = 0;
+
+//Kalla nästa metod som har hand om datorns slumpgenererade val och användarens input.
+		randomNrUserInput(rand, scan, userScore, compScore);
+		
+	}
+
+//**********************************************************************************************
+//Metoden slumpgenererar ett tal (datorns val) samt låter användaren göra sitt val.
+//Input kontrolleras med en if-statement som tillåter strängarna "sten", "sax" och "påse".
+//Om input är rätt, kallas metoden play().
+//En while-loop visar "ogiltigt val" om användaren skrivit in något annat än "sten", "sax" eller "påse".
+//Om användaren då skriver in ett giltigt val, så kontrolleras det mot den if-statement som är nästlad
+//i while-loopen. Annars körs while-loopen så länge input är ogiltigt.
+	public static void randomNrUserInput(Random rand, Scanner scan, int userScore, int compScore) {
+		
+		int randomNr = rand.nextInt(3) + 1; //(3) + 1 används för att få fram max 3 och minst 1.
+		String input = scan.nextLine();
+		
+		if(input.equalsIgnoreCase("sten") || input.equalsIgnoreCase("sax") || input.equalsIgnoreCase("påse")) {
+			play(input, scan, rand, randomNr, userScore, compScore);
+		}
+		else {
+			while(!input.equalsIgnoreCase("sten") && !input.equalsIgnoreCase("sax") && !input.equalsIgnoreCase("påse")) {
+				System.out.println("Ogiltigt val. Välj sten, sax, eller påse: ");
+				input = scan.nextLine();
+				if(input.equalsIgnoreCase("sten") || input.equalsIgnoreCase("sax") || input.equalsIgnoreCase("påse")) {
+					play(input, scan, rand, randomNr, userScore, compScore);
+				}
+			}
+		}
+		
+	}
+
+//**********************************************************************************************
+//Användarens val och datorns slumpgenererade val kontrolleras mot varandra för att se vem som vunnit omgången.
+//En while-loop används för att fortsätta köra spelet så länge ingen har vunnit 3 poäng.
+	public static void play(String input, Scanner scan, Random rand, int randomNr, int userScore, int compScore) {
+
+		while (userScore < 3 && compScore < 3)	 {
+//Kontrollera först om spelaren och datorn har valt samma i följande metod.
+			same(randomNr, input, userScore, compScore);
+			
+//**********Om användaren spelat 1(sten):
+			if(input.equalsIgnoreCase("sten")) {
+				//..och datorn har spelat 2(sax):
+				if(randomNr == 2) {
+						userScore += 1;
+						System.out.println("Sten-Sax, " + userScore + "-" + compScore);
+						testScores(userScore, compScore);
+						randomNrUserInput(rand, scan, userScore, compScore);
+				//..och datorn har spelat 3(påse):
+				} else if(randomNr == 3) {
+						compScore += 1;
+						System.out.println("Sten-Pase, " + userScore + "-" + compScore);
+						testScores(userScore, compScore);
+						randomNrUserInput(rand, scan, userScore, compScore);
+				}
+			}
+//**********Om användaren spelat 2(sax):
+			else if(input.equalsIgnoreCase("sax")) {
+				//..och datorn har spelat 3(påse):
+				if(randomNr == 3) {
+						userScore += 1;
+						System.out.println("Sax-Pase, " + userScore + "-" + compScore);
+						testScores(userScore, compScore);
+						randomNrUserInput(rand, scan, userScore, compScore);
+				//..och om datorn har spelat 1(sten):
+				} else if(randomNr == 1) {
+						compScore += 1;
+						System.out.println("Sax-Sten, " + userScore + "-" + compScore);
+						testScores(userScore, compScore);
+						randomNrUserInput(rand, scan, userScore, compScore);
+				}
+			}
+//**********Om användaren spelat 3(påse):
+			else if(input.equalsIgnoreCase("påse")) {
+				//..och om datorn har spelat 1(sten):
+				if(randomNr == 1) {
+						userScore += 1;
+						System.out.println("Pase-Sten, " + userScore + "-" + compScore);
+						testScores(userScore, compScore);
+						randomNrUserInput(rand, scan, userScore, compScore);
+				//..och om datorn har spelat 2(sax):
+				} else if(randomNr == 2) {
+						compScore += 1;
+						System.out.println("Pase-Sax, " + userScore + "-" + compScore);
+						testScores(userScore, compScore);
+						randomNrUserInput(rand, scan, userScore, compScore);
+				}
+			}
+		}
+	}
+
+//**********************************************************************************************
+//Metoden testar om användaren och datorn har valt samma.
+//Om de inte valt samma så körs play()-metoden.
+	public static void same(int randomNr, String input, int userScore, int compScore) {
+
+//Håller strängen "sten", "sax" eller "påse" beroende på datorns val.
+		String rando;
+
+//För att datorn val (som är en int) ska kunna jämföras med användarens inmatning (som är en sträng) 
+//så körs en if-else if-statement som ska kunna hantera uppgiften:		
+//Om båda har valt sten:
+		if(randomNr == 1) {
+			rando = "sten";
+			if(input.equalsIgnoreCase(rando)) {
+				System.out.println("Oavgjort. Spelet börjar om.");	
+				main(null);
+			}
+		} 
+
+//Om båda har valt sax:
+		else if (randomNr == 2) {
+			rando = "sax";
+			if(input.equalsIgnoreCase(rando)) {
+				System.out.println("Oavgjort. Spelet börjar om.");
+				main(null);
+			}
+		} 
+
+//Om båda har valt påse:
+		else if (randomNr == 3) {
+			rando = "påse";
+			if(input.equalsIgnoreCase(rando)) {
+				System.out.println("Oavgjort. Spelet börjar om.");
+				main(null);
+			}
+		}
+
+//Om datorn och användaren inte valt samma: 
+		else {
+			play(null, null, null, randomNr, compScore, userScore);
+		}
+	}
+
+//**********************************************************************************************
+//Metoden testar om någon uppnått 3 poäng.
+	public static void testScores(int userScore, int compScore) {
+		
+		if(userScore == 3) {
+			System.out.println("D u  V a n n");
+			System.exit(0);
+		}
+		else if(compScore == 3) {
+			System.out.println("D u  F o r l o r a d e");
+			System.exit(0);
+		}
+	}
+
+
+} //SLUT public class
